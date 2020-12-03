@@ -7,9 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 
 public class QueueIterator implements Iterator<String> {
-    Queue queue;
+    private Queue queue;
     private int currentPosition = 0;
-    List<String> objects = new ArrayList<>();
+    private List<String> objects = new ArrayList<>();
 
     public QueueIterator(Queue queue) {
         this.queue = queue;

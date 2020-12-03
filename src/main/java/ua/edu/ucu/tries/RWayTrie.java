@@ -3,7 +3,7 @@ package ua.edu.ucu.tries;
 import ua.edu.ucu.collections.Queue;
 
 public class RWayTrie implements Trie {
-    private static int R = 26;
+    private static final int R = 26;
     private Node root = new Node();
     private int size = 0;
 
@@ -16,7 +16,7 @@ public class RWayTrie implements Trie {
             for (Node node : next) {
                 if (node != null) {
                     counter++;
-                };
+                }
             }
             return counter;
         }
@@ -65,22 +65,23 @@ public class RWayTrie implements Trie {
     @Override
     public boolean delete(String word) {
         Node curNode = root;
-        Node lastNode = null;  // The last node which has a non-negative value
+        Node lastNode = root;  // The last node which has a non-negative value
                                // or > 1 children
         int i = 0;
-        int lastI = 0;
-        while (curNode != null && i != word.length()) {
+        char lastC = 0;
+        while (curNode != null && i != word.length()-1) {
             if (curNode.val != -1 || curNode.numChildren() > 1) {
                 lastNode = curNode;
-                lastI = i;
+                lastC = word.charAt(i);
             }
-            curNode = curNode.next[i++];
+            char c = word.charAt(i++);
+            curNode = curNode.next[c-'a'];
         }
         if (curNode != null) {
             if (curNode.numChildren() != 0) {
                 curNode.val = -1;
             } else {
-                lastNode.next[i] = null;
+                lastNode.next[lastC-'a'] = null;
             }
             size--;
             return true;
@@ -90,27 +91,21 @@ public class RWayTrie implements Trie {
 
     @Override
     public Iterable<String> words() {
-        return wordsWithPrefix("", size);
+        return wordsWithPrefix("");
     }
 
     @Override
     public Iterable<String> wordsWithPrefix(String s) {
-        return wordsWithPrefix(s, size);
-    }
-
-    @Override
-    public Iterable<String> wordsWithPrefix(String s, int k) {
         Queue q = new Queue();
-        collect(get(root, s, 0), s, q, k);
-//        collect(root, s, q, k);
+        collect(get(root, s, 0), s, q);
         return q;
     }
 
-    private void collect(Node x, String s, Queue q, int k) {
+    private void collect(Node x, String s, Queue q) {
         if (x == null) return;
-        if (x.val != -1 && k-- > 0) q.enqueue(s);
+        if (x.val != -1) q.enqueue(s);
         for (char i = 0; i < R; i++) {
-            collect(x.next[i], s + (char) (i+'a'), q, k);
+            collect(x.next[i], s + (char) (i+'a'), q);
         }
     }
 

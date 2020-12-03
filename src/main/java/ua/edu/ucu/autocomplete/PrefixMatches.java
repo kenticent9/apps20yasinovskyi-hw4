@@ -3,6 +3,8 @@ package ua.edu.ucu.autocomplete;
 import ua.edu.ucu.tries.Trie;
 import ua.edu.ucu.tries.Tuple;
 
+import java.util.*;
+
 /**
  *
  * @author andrii
@@ -20,7 +22,9 @@ public class PrefixMatches {
             strings = strings[0].split(" ");
         }
         for (String string : strings) {
-            trie.add(new Tuple(string, string.length()));
+            if (string.length() > 2) {
+                trie.add(new Tuple(string, string.length()));
+            }
         }
         return trie.size();
     }
@@ -38,7 +42,17 @@ public class PrefixMatches {
     }
 
     public Iterable<String> wordsWithPrefix(String pref, int k) {
-        return trie.wordsWithPrefix(pref, k);
+        List<String> result = new ArrayList<>();
+        Set<Integer> seen = new HashSet<>();
+        for (String word : wordsWithPrefix(pref)) {
+            if (!seen.contains(word.length()) && k-- > 0) {
+                seen.add(word.length());
+                result.add(word);
+            } else if (seen.contains(word.length())) {
+                result.add(word);
+            }
+        }
+        return result;
     }
 
     public int size() {
